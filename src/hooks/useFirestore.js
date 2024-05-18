@@ -1,31 +1,39 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import {db} from '../firebase/config'
 
 const useFirestore = (collection, condition) => {
 
     const [data, setData] = useState([]);
 
-     React.useEffect(() => {
-        let collectionRef = db.collection(collection).orderBy('createdAt')
-        
-        if(condition){
+     useEffect(() => {
+        // let collectionRef = db.collection(collection).orderBy('createdAt')
+        if (!collection) {
+            console.error("Collection name is required");
+            return;
+        }
 
+        let collectionRef = db.collection(collection).orderBy('createdAt');
+
+        if(condition){
+            const { fieldName, operator, compareValue } = condition;
             if(!condition.compareValue || !condition.compareValue.length){
                 return ;
             }
-            collectionRef = collectionRef.where(condition.fieldName, condition.operator, condition.compareValue);
+            collectionRef = collectionRef.where(fieldName, operator, compareValue);
         }
-        const unsubscribe = collectionRef.onSnapshot((snapshot) => {
-            const data = snapshot.docs.map((doc) =>({
-                ...doc.data(),
-                id: doc.id,
-            }));
 
-            setData(data);
+        const unsubscribe = collectionRef.onSnapshot(
+            (snapshot) => {
+                const data = snapshot.docs.map((doc) =>({
+                    ...doc.data(),
+                    id: doc.id,
+                }));
+
+                setData(data);
 
         });
 
-        return unsubscribe;
+        return () => unsubscribe();
     }, [collection, condition]);
 
     return data;

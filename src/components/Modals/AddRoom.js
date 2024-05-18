@@ -14,8 +14,6 @@ const AddRoom = () => {
     
     const handleOk = () => {
 
-        console.log(form.getFieldValue().desc)
-
         if(form.getFieldValue().desc === undefined || form.getFieldValue().desc === "" || form.getFieldValue().name === undefined || form.getFieldValue().name === "")
             alert("Please check room name or description")
         

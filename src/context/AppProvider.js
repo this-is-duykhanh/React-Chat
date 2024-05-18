@@ -11,16 +11,15 @@ export default function AppProvider({children}){
     const [isInviteMember, setIsInviteMember] = useState(false);
 
     const {user: {uid}} = React.useContext(AuthContext);
+    
     const roomCondition = React.useMemo(() => {
         return{
-            fieldName: 'members',
-            operator: 'array-contains',
+            fieldName: "members",
+            operator: "array-contains",
             compareValue: uid
-            
         };
         
-    },[uid]);
-    
+    }, [uid]);
     const rooms = useFirestore('rooms', roomCondition);
 
     const selectedRoom = React.useMemo(
@@ -47,5 +46,4 @@ export default function AppProvider({children}){
             {children}
         </AppContext.Provider>
     )
-
 }

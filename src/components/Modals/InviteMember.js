@@ -39,7 +39,6 @@ function DebounceSelect({fetchOptions, debounceTimeout = 300,curMembers, ...prop
             {...props}
         >
             {
-                // [{label, value, photoURL}]
                 options.map((opt) => (
 
                     <Select.Option key={opt.value} value={opt.value} title={opt.label}>

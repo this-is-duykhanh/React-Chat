@@ -21,7 +21,7 @@ export default function AuthProvider({children}){
                 
                 setUser({ displayName, email, uid, photoURL });
                 
-                history('/');
+                history('/React-Chat');
                 setIsLoading(false);
                 return;
             }
