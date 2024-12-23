@@ -5,33 +5,57 @@ const useFirestore = (collection, condition) => {
 
     const [data, setData] = useState([]);
 
+
      useEffect(() => {
-        // let collectionRef = db.collection(collection).orderBy('createdAt')
         if (!collection) {
             console.error("Collection name is required");
             return;
         }
 
-        let collectionRef = db.collection(collection).orderBy('createdAt');
+        let collectionRef = db.collection(collection);
 
-        if(condition){
+        if (condition) {
             const { fieldName, operator, compareValue } = condition;
-            if(!condition.compareValue || !condition.compareValue.length){
-                return ;
+
+            // Validate the condition
+            if (!fieldName || !operator || compareValue === undefined || compareValue === null) {
+                console.warn("Invalid Firestore query condition:", condition);
+                return;
             }
-            collectionRef = collectionRef.where(fieldName, operator, compareValue);
+
+            // Special case for array operators (e.g., "in", "array-contains-any")
+            if (Array.isArray(compareValue) && compareValue.length === 0) {
+                console.warn("Empty array for Firestore query condition:", condition);
+                return;
+            }
+
+            try {
+                // Apply the where clause
+                collectionRef = collectionRef.where(fieldName, operator, compareValue);
+            } catch (error) {
+                console.error("Error applying Firestore where clause:", error);
+                return;
+            }
         }
 
         const unsubscribe = collectionRef.onSnapshot(
             (snapshot) => {
-                const data = snapshot.docs.map((doc) =>({
-                    ...doc.data(),
-                    id: doc.id,
-                }));
+                try {
+                    const newData = snapshot.docs.map((doc) => ({
+                        ...doc.data(),
+                        id: doc.id,
+                    })).sort((a, b) => a.createdAt - b.createdAt);
 
-                setData(data);
 
-        });
+                    setData(newData);
+                } catch (error) {
+                    console.error("Error fetching Firestore data:", error);
+                }
+            },
+            (error) => {
+                console.error("Firestore listener error:", error);
+            }
+        );
 
         return () => unsubscribe();
     }, [collection, condition]);

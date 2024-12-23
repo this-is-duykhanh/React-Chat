@@ -42,7 +42,6 @@ export default function RoomList({ handleRoomClick })
         setIsAddRoomVisible(true);
     }
 
-
     return (
         <Collapse ghost defaultActiveKey={['1']}>
             <PanelStyled header="Room List" key='1'>

@@ -131,12 +131,18 @@ export default function ChatWindow({handleRoomClick, isHidden})
     };
 
     
-    const condition = useMemo(() => ({
-        fieldName: 'roomId',
-        operator: '==',
-        compareValue: selectedRoom.id
-    }), [selectedRoom.id])
-
+    const condition = useMemo(() => {
+        if (selectedRoom.id) {
+            return {
+                fieldName: 'roomId',
+                operator: '==',
+                compareValue: selectedRoom.id,
+            };
+        }
+    
+        return null; // or return an empty object if you prefer
+    }, [selectedRoom.id]);
+    
     const messages = useFirestore('messages', condition);
 
     const messageListRef = useRef(null);

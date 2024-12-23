@@ -13,14 +13,19 @@ export default function AppProvider({children}){
     const {user: {uid}} = React.useContext(AuthContext);
     
     const roomCondition = React.useMemo(() => {
-        return{
-            fieldName: "members",
-            operator: "array-contains",
-            compareValue: uid
-        };
+
+        if(uid){
+            return{
+                fieldName: "members",
+                operator: "array-contains",
+                compareValue: uid,
+            };
+        }
         
     }, [uid]);
+
     const rooms = useFirestore('rooms', roomCondition);
+
 
     const selectedRoom = React.useMemo(
         () => 
@@ -30,11 +35,15 @@ export default function AppProvider({children}){
     );
 
     const usersCondition = React.useMemo(() => {
-        return{
-            fieldName: 'uid',
-            operator: 'in',
-            compareValue: selectedRoom.members,
-        };
+        if(selectedRoom.members){
+            return{
+                fieldName: 'uid',
+                operator: 'in',
+                compareValue: selectedRoom.members,
+            };
+
+        }
+
         
     },[selectedRoom.members]);
 

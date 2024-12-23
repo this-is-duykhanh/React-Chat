@@ -59,9 +59,10 @@ function DebounceSelect({fetchOptions, debounceTimeout = 300,curMembers, ...prop
 
 async function fetchUserList(search, curMembers){
 
+
     return db
     .collection('users')
-    .where('keywords', 'array-contains', search)
+    .where('keywords', 'array-contains', search.toLowerCase())
     .orderBy('displayName')
     .limit(20)
     .get()
